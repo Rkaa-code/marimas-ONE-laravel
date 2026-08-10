@@ -12,7 +12,7 @@ use App\Http\Controllers\Inventaris\KelengkapanMasterController;
 use App\Http\Controllers\Inventaris\SupplierController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LokasiKantorController;
+use App\Http\Controllers\LokasiCabangController;
 
 Route::redirect('/', '/login');
 
@@ -25,7 +25,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('cabang', LokasiKantorController::class)
+    Route::resource('cabang', LokasiCabangController::class)
         ->only(['index', 'create', 'store', 'update', 'destroy']);
 
     // Admin-only, di luar prefix inventaris.

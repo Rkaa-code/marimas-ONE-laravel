@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\LokasiKantor;
 
-class LokasiKantorController extends Controller
+class LokasiCabangController extends Controller
 {
     public function index()
     {
-        $cabangs = LokasiKantor::all()->map(function ($c) {
+        $cabangs = LokasiCabang::all()->map(function ($c) {
             return [
                 'id' => $c->id,
                 'nama' => $c->nama,
@@ -40,7 +40,7 @@ class LokasiKantorController extends Controller
             'link' => ['nullable', 'url', 'max:500'],
         ]);
 
-        $cabang = LokasiKantor::create($validated);
+        $cabang = LokasiCabang::create($validated);
 
         return response()->json([
             'message' => 'Cabang berhasil ditambahkan.',

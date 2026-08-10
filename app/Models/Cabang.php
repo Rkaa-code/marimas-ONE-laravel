@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class LokasiKantor extends Model
+class LokasiCabang extends Model
 {
-    protected $table = 'lokasi_kantor';
+    protected $table = 'lokasi_cabang';
 
     protected $fillable = [
         'nama',
