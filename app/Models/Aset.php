@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NotifiesAdmin;
 use Illuminate\Database\Eloquent\Model;
 
 class Aset extends Model
 {
+    use NotifiesAdmin;
+
     protected $table = 'aset';
 
     protected $fillable = [
@@ -55,5 +58,18 @@ class Aset extends Model
     public function pemakaiAktif()
     {
         return $this->hasOne(AsetPemakai::class)->whereNull('tanggal_kembali')->latestOfMany('tanggal_serah');
+    }
+
+    public function penanganan()
+    {
+        return $this->hasMany(AsetPenanganan::class)->latest('tanggal_lapor');
+    }
+
+    /** Laporan kerusakan yang masih berjalan (belum berhasil diperbaiki / rusak berat). */
+    public function penangananAktif()
+    {
+        return $this->hasOne(AsetPenanganan::class)
+            ->whereIn('status', ['menunggu_terima', 'sedang_diperbaiki'])
+            ->latestOfMany('tanggal_lapor');
     }
 }

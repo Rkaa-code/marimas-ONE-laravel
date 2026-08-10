@@ -16,14 +16,17 @@ class AsetPemakai extends Model
         'tanggal_serah',
         'catatan_serah',
         'foto_serah',
+        'nomor_pengembalian',
         'tanggal_kembali',
         'catatan_kembali',
+        'foto_kembali',
     ];
 
     protected $casts = [
         'tanggal_serah' => 'date',
         'tanggal_kembali' => 'date',
         'foto_serah' => 'array',
+        'foto_kembali' => 'array',
     ];
 
     public function aset()

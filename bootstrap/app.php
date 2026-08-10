@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Tanpa ini, Laravel gak tau request aslinya HTTPS, jadi asset()/@vite()
         // generate URL http:// -> browser block sebagai mixed content.
         $middleware->trustProxies(at: '*');
+
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

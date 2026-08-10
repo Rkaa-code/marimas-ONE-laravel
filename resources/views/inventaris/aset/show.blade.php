@@ -34,8 +34,10 @@
             @if ($aset->status === 'tersedia' && auth()->user()?->hasRole('admin'))
                 <x-inventaris.aset.serahkan-modal :aset="$aset" />
             @endif
-            <a href="{{ route('inventaris.aset.edit', $aset) }}"
-               class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Edit</a>
+            @if (auth()->user()?->hasRole('admin'))
+                <a href="{{ route('inventaris.aset.edit', $aset) }}"
+                   class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Edit</a>
+            @endif
             <a href="{{ route('inventaris.aset.index') }}"
                class="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Kembali</a>
         </div>
@@ -47,12 +49,7 @@
                 <span class="font-medium text-amber-900">Sedang dipegang oleh {{ $aset->pemakaiAktif->penerima->name }}</span>
                 <span class="text-amber-700"> &mdash; sejak {{ $aset->pemakaiAktif->tanggal_serah->format('d M Y') }}</span>
             </div>
-            <form method="POST" action="{{ route('inventaris.aset.pemakai.kembalikan', $aset->pemakaiAktif) }}">
-                @csrf
-                <button type="submit" class="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100">
-                    Tandai Dikembalikan
-                </button>
-            </form>
+            <x-inventaris.aset.kembalikan-modal :pemakai="$aset->pemakaiAktif" />
         </div>
     @endif
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,15 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'login',
+            'description' => Auth::user()->name . ' login ke sistem',
+            'ip_address' => $request->ip(),
+            'user_agent' => substr((string) $request->userAgent(), 0, 255),
+        ]);
+
         flash()
             ->success('Selamat datang, ' . Auth::user()->name . '!');
         return redirect()->intended(route('dashboard'));
@@ -42,6 +52,16 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        if (Auth::check()) {
+            AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'logout',
+                'description' => Auth::user()->name . ' logout dari sistem',
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 255),
+            ]);
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

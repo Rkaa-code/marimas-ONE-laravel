@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Aset;
 use App\Models\AsetPemakai;
+use App\Models\AsetPenanganan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,60 +53,129 @@ class AsetPemakaiController extends Controller
 
         abort_unless($roleValid, 422, 'Penerima tidak cocok dengan tujuan yang dipilih.');
 
-        return DB::transaction(function () use ($request, $aset, $data) {
-            // Lock baris aset biar gak ada 2 admin serahin aset yang sama bersamaan.
-            $aset = Aset::whereKey($aset->id)->lockForUpdate()->firstOrFail();
+        try {
+            return DB::transaction(function () use ($request, $aset, $data) {
+                // Lock baris aset biar gak ada 2 admin serahin aset yang sama bersamaan.
+                $aset = Aset::whereKey($aset->id)->lockForUpdate()->firstOrFail();
 
-            abort_if($aset->status !== 'tersedia', 422, 'Aset sedang tidak tersedia untuk diserahkan.');
+                abort_if($aset->status !== 'tersedia', 422, 'Aset sedang tidak tersedia untuk diserahkan.');
 
-            $fotoPaths = collect($request->file('foto_serah'))
-                ->map(fn ($file) => $file->store('bukti-serah-terima', 'public'))
+                $fotoPaths = collect($request->file('foto_serah'))
+                    ->map(fn ($file) => $file->store('bukti-serah-terima', 'public'))
+                    ->all();
+
+                $nomor = 'STJ-' . now()->format('Ymd') . '-' . str_pad(
+                    (AsetPemakai::whereDate('created_at', now())->count() + 1),
+                    4,
+                    '0',
+                    STR_PAD_LEFT
+                );
+
+                $pemakai = AsetPemakai::create([
+                    'aset_id' => $aset->id,
+                    'user_id' => $data['user_id'],
+                    'diserahkan_oleh_user_id' => Auth::id(),
+                    'nomor_serah_terima' => $nomor,
+                    'tanggal_serah' => $data['tanggal_serah'],
+                    'catatan_serah' => $data['catatan_serah'] ?? null,
+                    'foto_serah' => $fotoPaths,
+                ]);
+
+                $aset->update(['status' => 'dipakai']);
+                flash()->success('Aset berhasil diserahkan ke ' . $pemakai->penerima->name . '.');
+                return redirect()
+                    ->route('inventaris.aset.pemakai.struk', $pemakai)
+                    ->with('success', 'Aset berhasil diserahkan.');
+            });
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal serahkan aset: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage() . ' (' . basename(str_replace('\\', '/', get_class($e))) . ' @ ' . basename($e->getFile()) . ':' . $e->getLine() . ')',
+            ], 500);
+        }
+    }
+
+    /** Tandai aset sudah dikembalikan, sekaligus opsi tandai rusak. */
+    public function kembalikan(Request $request, AsetPemakai $pemakai)
+    {
+        $data = $request->validate([
+            'kode_struk' => 'required|string',
+            'tanggal_kembali' => 'required|date',
+            'catatan_kembali' => 'nullable|string|max:1000',
+            'foto_kembali' => 'required|array|min:1|max:3',
+            'foto_kembali.*' => 'image|max:5120',
+            'is_rusak' => 'nullable|boolean',
+            'jenis_kerusakan' => 'required_if:is_rusak,1|nullable|in:hardware,software',
+            'keluhan' => 'required_if:is_rusak,1|nullable|string|max:1000',
+            'foto_kerusakan' => 'required_if:is_rusak,1|nullable|array|min:1|max:3',
+            'foto_kerusakan.*' => 'image|max:3072',
+        ]);
+
+        abort_if($pemakai->tanggal_kembali !== null, 422, 'Aset ini sudah tercatat dikembalikan.');
+        abort_unless(
+            strcasecmp(trim($data['kode_struk']), $pemakai->nomor_serah_terima) === 0,
+            422,
+            'Kode struk penerimaan tidak cocok dengan catatan serah-terima aset ini.'
+        );
+
+        $isRusak = $request->boolean('is_rusak');
+
+        return DB::transaction(function () use ($request, $pemakai, $data, $isRusak) {
+            $fotoPaths = collect($request->file('foto_kembali'))
+                ->map(fn ($file) => $file->store('bukti-pengembalian', 'public'))
                 ->all();
 
-            $nomor = 'STJ-' . now()->format('Ymd') . '-' . str_pad(
-                (AsetPemakai::whereDate('created_at', now())->count() + 1),
+            $nomor = 'STP-' . now()->format('Ymd') . '-' . str_pad(
+                (AsetPemakai::whereDate('created_at', now())->whereNotNull('nomor_pengembalian')->count() + 1),
                 4,
                 '0',
                 STR_PAD_LEFT
             );
 
-            $pemakai = AsetPemakai::create([
-                'aset_id' => $aset->id,
-                'user_id' => $data['user_id'],
-                'diserahkan_oleh_user_id' => Auth::id(),
-                'nomor_serah_terima' => $nomor,
-                'tanggal_serah' => $data['tanggal_serah'],
-                'catatan_serah' => $data['catatan_serah'] ?? null,
-                'foto_serah' => $fotoPaths,
+            $pemakai->update([
+                'nomor_pengembalian' => $nomor,
+                'tanggal_kembali' => $data['tanggal_kembali'],
+                'catatan_kembali' => $data['catatan_kembali'] ?? null,
+                'foto_kembali' => $fotoPaths,
             ]);
 
-            $aset->update(['status' => 'dipakai']);
-            flash()->success('Aset berhasil diserahkan ke ' . $pemakai->penerima->name . '.');
+            if ($isRusak) {
+                $fotoKerusakanPaths = collect($request->file('foto_kerusakan'))
+                    ->map(fn ($file) => $file->store('bukti-kerusakan', 'public'))
+                    ->all();
+
+                AsetPenanganan::create([
+                    'aset_id' => $pemakai->aset_id,
+                    'status' => AsetPenanganan::STATUS_MENUNGGU_TERIMA,
+                    'pelapor_user_id' => $pemakai->user_id,
+                    'jenis_kerusakan' => $data['jenis_kerusakan'],
+                    'keluhan' => $data['keluhan'],
+                    'foto_kerusakan' => $fotoKerusakanPaths,
+                    'tanggal_lapor' => $data['tanggal_kembali'],
+                ]);
+
+                $pemakai->aset->update(['status' => 'menunggu_perbaikan']);
+            } else {
+                $pemakai->aset->update(['status' => 'tersedia']);
+            }
+
             return redirect()
-                ->route('inventaris.aset.pemakai.struk', $pemakai)
-                ->with('success', 'Aset berhasil diserahkan.');
+                ->route('inventaris.aset.pemakai.struk-kembali', $pemakai)
+                ->with('success', 'Aset berhasil ditandai dikembalikan.');
         });
     }
 
-    /** Tandai aset sudah dikembalikan. */
-    public function kembalikan(Request $request, AsetPemakai $pemakai)
+    /** Struk bukti pengembalian, siap diprint. */
+    public function strukKembali(AsetPemakai $pemakai)
     {
-        $data = $request->validate([
-            'catatan_kembali' => 'nullable|string|max:1000',
-        ]);
+        abort_if($pemakai->tanggal_kembali === null, 404);
 
-        abort_if($pemakai->tanggal_kembali !== null, 422, 'Aset ini sudah tercatat dikembalikan.');
+        $pemakai->load(['aset', 'penerima']);
 
-        DB::transaction(function () use ($pemakai, $data) {
-            $pemakai->update([
-                'tanggal_kembali' => now(),
-                'catatan_kembali' => $data['catatan_kembali'] ?? null,
-            ]);
-
-            $pemakai->aset()->update(['status' => 'tersedia']);
-        });
-
-        return back()->with('success', 'Aset berhasil ditandai dikembalikan.');
+        return view('inventaris.aset.struk-kembali', ['pemakai' => $pemakai]);
     }
 
     /** Struk bukti serah terima, siap diprint. */

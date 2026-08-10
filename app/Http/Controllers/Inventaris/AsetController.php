@@ -14,7 +14,7 @@ class AsetController extends Controller
 {
     public function index(Request $request)
     {
-        $aset = Aset::with(['jenis', 'supplier'])
+        $aset = Aset::with(['jenis', 'supplier', 'pemakaiAktif.penerima'])
             ->when($request->search, function ($q) use ($request) {
                 $q->where(function ($sub) use ($request) {
                     $sub->where('merek', 'like', '%' . $request->search . '%')
@@ -118,6 +118,25 @@ class AsetController extends Controller
         $aset->delete();
 
         return back()->with('success', 'Aset berhasil dihapus.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:aset,id'],
+        ]);
+
+        $asetList = Aset::whereIn('id', $data['ids'])->get();
+
+        foreach ($asetList as $aset) {
+            if ($aset->foto) {
+                Storage::disk('public')->delete($aset->foto);
+            }
+            $aset->delete();
+        }
+
+        return back()->with('success', count($asetList) . ' aset berhasil dihapus.');
     }
 
     private function validateData(Request $request): array
