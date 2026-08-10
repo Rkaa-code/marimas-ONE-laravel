@@ -87,30 +87,43 @@
             </ul>
         </nav>
 
-        {{-- SEARCH + FILTER JENIS — samain style SearchInput.tsx --}}
+        {{-- SEARCH + FILTER STATUS — pill style samain kaya gambar --}}
         <form method="GET" class="mb-4 flex flex-wrap gap-3">
-            @if ($activeStatus !== '')
-                <input type="hidden" name="status" value="{{ $activeStatus }}">
+            @if (request('jenis_id'))
+                <input type="hidden" name="jenis_id" value="{{ request('jenis_id') }}">
             @endif
-
+        
             <div class="relative flex-1 min-w-[220px]">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode, merek, tipe, atau serial number..."
-                       class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
+                       class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
             </div>
-
+        
+            <div class="relative">
+                <select name="status" onchange="this.form.submit()"
+                        class="appearance-none rounded-full border border-slate-300 pl-4 pr-9 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer">
+                    <option value="" {{ $activeStatus === '' ? 'selected' : '' }}>Semua Status</option>
+                    @foreach ($statusLabel as $value => $label)
+                        <option value="{{ $value }}" {{ $activeStatus === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+        
             <select name="jenis_id" onchange="this.form.submit()"
-                    class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
+                    class="rounded-full border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
                 <option value="">Semua Jenis</option>
                 @foreach ($jenisAset as $jenis)
                     <option value="{{ $jenis->id }}" @selected(request('jenis_id') == $jenis->id)>{{ $jenis->nama }}</option>
                 @endforeach
             </select>
-
+        
             @if (request()->hasAny(['search', 'jenis_id', 'status']))
-                <a href="{{ route('inventaris.aset.index') }}" class="rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700">
+                <a href="{{ route('inventaris.aset.index') }}" class="rounded-full px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700">
                     Reset
                 </a>
             @endif
