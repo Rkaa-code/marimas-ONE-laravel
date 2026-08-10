@@ -56,4 +56,17 @@ class Aset extends Model
     {
         return $this->hasOne(AsetPemakai::class)->whereNull('tanggal_kembali')->latestOfMany('tanggal_serah');
     }
+
+    public function penanganan()
+    {
+        return $this->hasMany(AsetPenanganan::class)->latest('tanggal_lapor');
+    }
+
+    /** Laporan kerusakan yang masih berjalan (belum berhasil diperbaiki / rusak berat). */
+    public function penangananAktif()
+    {
+        return $this->hasOne(AsetPenanganan::class)
+            ->whereIn('status', ['menunggu_terima', 'sedang_diperbaiki'])
+            ->latestOfMany('tanggal_lapor');
+    }
 }

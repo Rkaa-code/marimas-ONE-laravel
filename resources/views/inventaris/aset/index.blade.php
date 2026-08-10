@@ -23,12 +23,7 @@
 @endphp
 
 @section('content')
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-semibold text-slate-900">Aset</h1>
-            <p class="text-sm text-slate-500">Kelola aset IT per-unit — daftar, filter, dan riwayatnya.</p>
-        </div>
-    </div>
+    <x-inventaris.tab-nav active="aset" />
 
     {{-- CARD WRAPPER — samain kaya bungkus TabAset.tsx di React (bg-white rounded-xl p-6 shadow-sm border) --}}
     <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
