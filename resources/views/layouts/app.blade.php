@@ -37,6 +37,11 @@
                 </x-nav-link>
 
                 @if (auth()->user()?->role === 'admin')
+                    <x-nav-link :href="route('notifikasi.index')" :active="request()->routeIs('notifikasi.*')">
+                        <x-icon.bell class="h-[18px] w-[18px]" />
+                        Notifikasi
+                    </x-nav-link>
+
                     <x-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')">
                         <x-icon.clipboard-list class="h-[18px] w-[18px]" />
                         Audit Log
@@ -95,6 +100,10 @@
                     </button>
                     <h1 class="hidden text-xl font-bold text-slate-900 sm:block">@yield('title', 'Inventaris')</h1>
                 </div>
+
+                @if (auth()->user()?->role === 'admin')
+                    <x-notifikasi-bell />
+                @endif
             </header>
 
             <main class="flex-1 p-4 md:p-8">

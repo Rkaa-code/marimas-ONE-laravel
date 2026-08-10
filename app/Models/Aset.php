@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NotifiesAdmin;
 use Illuminate\Database\Eloquent\Model;
 
 class Aset extends Model
 {
+    use NotifiesAdmin;
+
     protected $table = 'aset';
 
     protected $fillable = [

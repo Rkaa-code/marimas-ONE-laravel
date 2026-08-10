@@ -157,9 +157,9 @@ class AsetPemakaiController extends Controller
                     'tanggal_lapor' => $data['tanggal_kembali'],
                 ]);
 
-                $pemakai->aset()->update(['status' => 'menunggu_perbaikan']);
+                $pemakai->aset->update(['status' => 'menunggu_perbaikan']);
             } else {
-                $pemakai->aset()->update(['status' => 'tersedia']);
+                $pemakai->aset->update(['status' => 'tersedia']);
             }
 
             return redirect()

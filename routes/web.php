@@ -10,6 +10,7 @@ use App\Http\Controllers\Inventaris\AsetController;
 use App\Http\Controllers\Inventaris\JenisAsetController;
 use App\Http\Controllers\Inventaris\KelengkapanMasterController;
 use App\Http\Controllers\Inventaris\SupplierController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -25,6 +26,13 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+
+        Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::get('terbaru', [NotificationController::class, 'terbaru'])->name('terbaru');
+            Route::post('baca-semua', [NotificationController::class, 'bacaSemua'])->name('baca-semua');
+            Route::post('{notification}/baca', [NotificationController::class, 'baca'])->name('baca');
+        });
     });
 
     Route::prefix('inventaris')->name('inventaris.')->group(function () {

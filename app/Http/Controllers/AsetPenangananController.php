@@ -104,7 +104,7 @@ class AsetPenangananController extends Controller
                 'tanggal_terima' => now(),
             ]);
 
-            $penanganan->aset()->update(['status' => 'sedang_diperbaiki']);
+            $penanganan->aset->update(['status' => 'sedang_diperbaiki']);
         });
 
         return back()->with('success', 'Laporan diterima, aset masuk status sedang diperbaiki.');
@@ -134,7 +134,7 @@ class AsetPenangananController extends Controller
                 'catatan' => $data['catatan'] ?? null,
             ]);
 
-            $penanganan->aset()->update([
+            $penanganan->aset->update([
                 'status' => $data['hasil'] === 'berhasil_diperbaiki' ? 'tersedia' : 'rusak_berat',
             ]);
         });
