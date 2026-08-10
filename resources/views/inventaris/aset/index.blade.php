@@ -87,41 +87,36 @@
             </ul>
         </nav>
 
-        {{-- SEARCH + FILTER JENIS — pill style, rapi di mobile & desktop --}}
-        <form method="GET" class="mb-4 flex flex-col sm:flex-row gap-3">
-            @if ($activeStatus !== '')
-                <input type="hidden" name="status" value="{{ $activeStatus }}">
-            @endif
-        
-            <div class="relative w-full sm:flex-1 sm:min-w-[220px]">
-                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode, merek, tipe, atau serial number..."
-                       class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
-            </div>
-        
-            <div class="flex gap-3">
-                <div class="relative flex-1 sm:flex-none">
-                    <select name="jenis_id" onchange="this.form.submit()"
-                            class="w-full appearance-none rounded-full border border-slate-300 pl-4 pr-9 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer">
-                        <option value="">Semua Jenis</option>
-                        @foreach ($jenisAset as $jenis)
-                            <option value="{{ $jenis->id }}" @selected(request('jenis_id') == $jenis->id)>{{ $jenis->nama }}</option>
-                        @endforeach
-                    </select>
-                    <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
-        
-                @if (request()->hasAny(['search', 'jenis_id', 'status']))
-                    <a href="{{ route('inventaris.aset.index') }}" class="shrink-0 rounded-full px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 self-center">
-                        Reset
-                    </a>
-                @endif
-            </div>
-        </form>
+blade
+{{-- SEARCH + FILTER JENIS — konsisten sama style audit-log --}}
+<form method="GET" class="mb-4 flex flex-wrap gap-3">
+    @if ($activeStatus !== '')
+        <input type="hidden" name="status" value="{{ $activeStatus }}">
+    @endif
+
+    <div class="relative flex-1 min-w-[220px]">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="text" name="search" value="{{ request('search') }}"
+               placeholder="Cari kode, merek, tipe, atau serial number..."
+               class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
+    </div>
+
+    <select name="jenis_id" onchange="this.form.submit()"
+            class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900">
+        <option value="">Semua Jenis</option>
+        @foreach ($jenisAset as $jenis)
+            <option value="{{ $jenis->id }}" @selected(request('jenis_id') == $jenis->id)>{{ $jenis->nama }}</option>
+        @endforeach
+    </select>
+
+    @if (request()->hasAny(['search', 'jenis_id', 'status']))
+        <a href="{{ route('inventaris.aset.index') }}" class="rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700">
+            Reset
+        </a>
+    @endif
+</form>
 
         <div class="border border-slate-200 rounded-lg overflow-hidden">
             {{-- DESKTOP: tabel 1 baris per row, overflow-x biar gak numpuk ke bawah --}}
