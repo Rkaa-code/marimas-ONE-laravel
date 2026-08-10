@@ -68,11 +68,11 @@
             <div class="shrink-0 border-t border-slate-100 p-3">
                 <div class="flex items-center gap-3 rounded-lg px-3 py-2.5">
                     <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
-                        {{ strtoupper(substr(session('dummy_user_name', 'Admin'), 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()->name ?? 'Admin', 0, 1)) }}
                     </span>
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-slate-800">{{ session('dummy_user_name', 'Admin') }}</p>
-                        <p class="truncate text-xs text-slate-400">{{ session('dummy_user_email', 'admin@marimasone.test') }}</p>
+                        <p class="truncate text-sm font-medium text-slate-800">{{ auth()->user()->name ?? 'Admin' }}</p>
+                        <p class="truncate text-xs text-slate-400">{{ auth()->user()->email ?? 'admin@marimasone.test' }}</p>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
