@@ -35,7 +35,8 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
-
+        flash()
+            ->success('Selamat datang, ' . Auth::user()->name . '!');
         return redirect()->intended(route('dashboard'));
     }
 
