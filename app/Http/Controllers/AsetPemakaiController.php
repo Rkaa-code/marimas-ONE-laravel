@@ -100,6 +100,8 @@ class AsetPemakaiController extends Controller
             'is_rusak' => 'nullable|boolean',
             'jenis_kerusakan' => 'required_if:is_rusak,1|nullable|in:hardware,software',
             'keluhan' => 'required_if:is_rusak,1|nullable|string|max:1000',
+            'foto_kerusakan' => 'required_if:is_rusak,1|nullable|array|min:1|max:3',
+            'foto_kerusakan.*' => 'image|max:3072',
         ]);
 
         abort_if($pemakai->tanggal_kembali !== null, 422, 'Aset ini sudah tercatat dikembalikan.');
@@ -131,12 +133,17 @@ class AsetPemakaiController extends Controller
             ]);
 
             if ($isRusak) {
+                $fotoKerusakanPaths = collect($request->file('foto_kerusakan'))
+                    ->map(fn ($file) => $file->store('bukti-kerusakan', 'public'))
+                    ->all();
+
                 AsetPenanganan::create([
                     'aset_id' => $pemakai->aset_id,
                     'status' => AsetPenanganan::STATUS_MENUNGGU_TERIMA,
                     'pelapor_user_id' => $pemakai->user_id,
                     'jenis_kerusakan' => $data['jenis_kerusakan'],
                     'keluhan' => $data['keluhan'],
+                    'foto_kerusakan' => $fotoKerusakanPaths,
                     'tanggal_lapor' => $data['tanggal_kembali'],
                 ]);
 

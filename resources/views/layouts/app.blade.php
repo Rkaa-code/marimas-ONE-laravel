@@ -31,19 +31,9 @@
                     Dashboard
                 </x-nav-link>
 
-                <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs('inventaris.aset.*')">
+                <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs(['inventaris.aset.*', 'inventaris.penanganan-aset.*', 'inventaris.foto-aset.*'])">
                     <x-icon.package class="h-[18px] w-[18px]" />
                     Aset
-                </x-nav-link>
-
-                <x-nav-link :href="route('inventaris.penanganan-aset.index')" :active="request()->routeIs('inventaris.penanganan-aset.*')">
-                    <x-icon.wrench class="h-[18px] w-[18px]" />
-                    Penanganan Aset
-                </x-nav-link>
-
-                <x-nav-link :href="route('inventaris.foto-aset.index')" :active="request()->routeIs('inventaris.foto-aset.*')">
-                    <x-icon.image class="h-[18px] w-[18px]" />
-                    Foto Aset
                 </x-nav-link>
 
                 <div x-data="{ open: {{ request()->routeIs('inventaris.master.*') ? 'true' : 'false' }} }" class="mb-1">

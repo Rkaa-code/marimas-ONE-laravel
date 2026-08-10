@@ -59,17 +59,24 @@ class AsetPenangananController extends Controller
         $data = $request->validate([
             'jenis_kerusakan' => 'required|in:software,hardware',
             'keluhan' => 'required|string|max:1000',
+            'foto_kerusakan' => 'required|array|min:1|max:3',
+            'foto_kerusakan.*' => 'image|max:3072',
         ]);
 
         abort_unless($aset->status === 'dipakai' && $aset->pemakaiAktif, 422, 'Aset ini sedang tidak dipakai siapa pun.');
 
-        DB::transaction(function () use ($aset, $data) {
+        DB::transaction(function () use ($request, $aset, $data) {
+            $fotoPaths = collect($request->file('foto_kerusakan'))
+                ->map(fn ($file) => $file->store('bukti-kerusakan', 'public'))
+                ->all();
+
             AsetPenanganan::create([
                 'aset_id' => $aset->id,
                 'status' => AsetPenanganan::STATUS_MENUNGGU_TERIMA,
                 'pelapor_user_id' => $aset->pemakaiAktif->user_id,
                 'jenis_kerusakan' => $data['jenis_kerusakan'],
                 'keluhan' => $data['keluhan'],
+                'foto_kerusakan' => $fotoPaths,
                 'tanggal_lapor' => now(),
             ]);
 

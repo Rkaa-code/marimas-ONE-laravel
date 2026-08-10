@@ -94,6 +94,30 @@
                             <textarea x-model="keluhan" rows="2" placeholder="cth. keyboard tidak berfungsi sebelah kiri"
                                       class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-500 focus:outline-none"></textarea>
                         </div>
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                                Foto Bukti Kerusakan (<span x-text="fotoKerusakan.length"></span> Foto)
+                                <span class="text-red-500">*</span>
+                                <span class="font-normal text-slate-400">(maks. 3 foto, 3MB/foto)</span>
+                            </label>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="(foto, idx) in fotoKerusakanPreviews" :key="idx">
+                                    <div class="relative h-20 w-20 overflow-hidden rounded-lg border border-slate-200">
+                                        <img :src="foto" class="h-full w-full object-cover">
+                                        <button type="button" x-on:click="hapusFotoKerusakan(idx)"
+                                                class="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white">
+                                            <x-icon.x class="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                </template>
+                                <label x-show="fotoKerusakan.length < 3"
+                                       class="flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 text-slate-400 hover:border-slate-400">
+                                    <input type="file" accept="image/*" class="hidden" x-on:change="tambahFotoKerusakan">
+                                    <span class="text-lg">+</span>
+                                    <span class="text-[10px]">Tambah</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -124,6 +148,8 @@
                 isRusak: false,
                 jenisKerusakan: 'hardware',
                 keluhan: '',
+                fotoKerusakan: [],
+                fotoKerusakanPreviews: [],
                 submitting: false,
                 error: null,
 
@@ -140,12 +166,31 @@
                     this.fotoPreviews.splice(idx, 1);
                 },
 
+                tambahFotoKerusakan(e) {
+                    const file = e.target.files[0];
+                    if (!file || this.fotoKerusakan.length >= 3) return;
+                    if (file.size > 3 * 1024 * 1024) {
+                        this.error = 'Ukuran foto kerusakan maksimal 3MB.';
+                        e.target.value = '';
+                        return;
+                    }
+                    this.fotoKerusakan.push(file);
+                    this.fotoKerusakanPreviews.push(URL.createObjectURL(file));
+                    e.target.value = '';
+                },
+
+                hapusFotoKerusakan(idx) {
+                    this.fotoKerusakan.splice(idx, 1);
+                    this.fotoKerusakanPreviews.splice(idx, 1);
+                },
+
                 async submit() {
                     this.error = null;
 
                     if (!this.kodeStruk.trim()) { this.error = 'Isi kode struk penerimaan dulu.'; return; }
                     if (this.fotos.length < 1) { this.error = 'Minimal 1 foto bukti kondisi aset.'; return; }
                     if (this.isRusak && !this.keluhan.trim()) { this.error = 'Isi keluhan kerusakannya dulu.'; return; }
+                    if (this.isRusak && this.fotoKerusakan.length < 1) { this.error = 'Minimal 1 foto bukti kerusakan.'; return; }
 
                     const fd = new FormData();
                     fd.append('kode_struk', this.kodeStruk);
@@ -155,6 +200,7 @@
                     if (this.isRusak) {
                         fd.append('jenis_kerusakan', this.jenisKerusakan);
                         fd.append('keluhan', this.keluhan);
+                        this.fotoKerusakan.forEach(f => fd.append('foto_kerusakan[]', f));
                     }
                     this.fotos.forEach(f => fd.append('foto_kembali[]', f));
 

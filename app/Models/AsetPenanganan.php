@@ -14,6 +14,7 @@ class AsetPenanganan extends Model
         'pelapor_user_id',
         'jenis_kerusakan',
         'keluhan',
+        'foto_kerusakan',
         'tanggal_lapor',
         'diterima_oleh_user_id',
         'tanggal_terima',
@@ -31,6 +32,7 @@ class AsetPenanganan extends Model
         'tanggal_selesai' => 'date',
         'harga_jasa' => 'decimal:2',
         'biaya_komponen' => 'decimal:2',
+        'foto_kerusakan' => 'array',
     ];
 
     const STATUS_MENUNGGU_TERIMA = 'menunggu_terima';
