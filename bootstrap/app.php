@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Http\Middleware\TrustProxies;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Railway (dan PaaS sejenis) taruh app di belakang proxy HTTPS-terminating.
+        // Tanpa ini, Laravel gak tau request aslinya HTTPS, jadi asset()/@vite()
+        // generate URL http:// -> browser block sebagai mixed content.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
