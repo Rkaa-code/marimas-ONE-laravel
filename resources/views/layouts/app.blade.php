@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Inventaris') - Marimas One</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="antialiased">
     <div x-data="{ sidebarOpen: false }" x-on:sidebar-toggle.window="sidebarOpen = true" class="h-screen bg-white flex overflow-hidden">
@@ -95,6 +96,6 @@
             </main>
         </div>
     </div>
-
+    @livewireScripts
 </body>
 </html>
