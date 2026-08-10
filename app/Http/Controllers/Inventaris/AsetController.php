@@ -120,6 +120,25 @@ class AsetController extends Controller
         return back()->with('success', 'Aset berhasil dihapus.');
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:aset,id'],
+        ]);
+
+        $asetList = Aset::whereIn('id', $data['ids'])->get();
+
+        foreach ($asetList as $aset) {
+            if ($aset->foto) {
+                Storage::disk('public')->delete($aset->foto);
+            }
+            $aset->delete();
+        }
+
+        return back()->with('success', count($asetList) . ' aset berhasil dihapus.');
+    }
+
     private function validateData(Request $request): array
     {
         return $request->validate([

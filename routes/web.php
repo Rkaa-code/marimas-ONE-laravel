@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
         // punya segmen statis ("create", "{aset}/edit") yang harus menang duluan
         // sebelum ketangkep sama wildcard {aset} di route show.
         Route::middleware('admin')->group(function () {
+            Route::delete('aset/bulk-destroy', [AsetController::class, 'bulkDestroy'])->name('aset.bulk-destroy');
             Route::resource('aset', AsetController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
 
             Route::prefix('aset/{aset}')->name('aset.')->group(function () {
