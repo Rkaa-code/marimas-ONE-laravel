@@ -42,18 +42,10 @@
                         <label for="password" class="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
                         <div class="relative">
                             <x-icon.lock class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                            <input id="password" type="password" name="password" value="password" required
+                            <input id="password" type="password" name="password" value="password123" required
                                    class="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm focus:border-slate-500 focus:outline-none"
                                    placeholder="••••••••">
                         </div>
-                    </div>
-
-                    <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center gap-2 text-slate-600">
-                            <input type="checkbox" name="remember" class="rounded border-slate-300">
-                            Ingat saya
-                        </label>
-                        <span class="text-slate-400">Lupa password?</span>
                     </div>
 
                     <button type="submit"

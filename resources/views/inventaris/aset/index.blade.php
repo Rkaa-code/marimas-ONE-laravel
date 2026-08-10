@@ -23,12 +23,7 @@
 @endphp
 
 @section('content')
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-semibold text-slate-900">Aset</h1>
-            <p class="text-sm text-slate-500">Kelola aset IT per-unit — daftar, filter, dan riwayatnya.</p>
-        </div>
-    </div>
+    <x-inventaris.tab-nav active="aset" />
 
     {{-- CARD WRAPPER — samain kaya bungkus TabAset.tsx di React (bg-white rounded-xl p-6 shadow-sm border) --}}
     <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -102,42 +97,65 @@
         </form>
 
         <div class="border border-slate-200 rounded-lg overflow-hidden">
-            {{-- DESKTOP: tabel, header style sama kaya TabAset.tsx --}}
+            {{-- DESKTOP: tabel 1 baris per row, overflow-x biar gak numpuk ke bawah --}}
             <div class="hidden sm:block overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="w-full text-sm min-w-[900px]">
                     <thead>
                         <tr class="border-b border-slate-100 text-xs text-slate-400 uppercase tracking-wide">
-                            <th class="px-6 py-3 font-medium text-left">Kode Aset</th>
-                            <th class="px-6 py-3 font-medium text-left">Jenis</th>
-                            <th class="px-6 py-3 font-medium text-left">Merek / Tipe</th>
-                            <th class="px-6 py-3 font-medium text-left">Serial Number</th>
-                            <th class="px-6 py-3 font-medium text-left">Supplier</th>
-                            <th class="px-6 py-3 font-medium text-left">Status</th>
-                            <th class="px-6 py-3 font-medium text-right">Aksi</th>
+                            <th class="px-6 py-3 font-medium text-left whitespace-nowrap">Kode Aset</th>
+                            <th class="px-6 py-3 font-medium text-left whitespace-nowrap">Jenis</th>
+                            <th class="px-6 py-3 font-medium text-left whitespace-nowrap">Merek / Tipe</th>
+                            <th class="px-6 py-3 font-medium text-left whitespace-nowrap">Serial Number</th>
+                            <th class="px-6 py-3 font-medium text-left whitespace-nowrap">Supplier</th>
+                            <th class="px-6 py-3 font-medium text-left whitespace-nowrap">Status</th>
+                            <th class="px-6 py-3 font-medium text-right whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($aset as $item)
                             <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60 transition">
                                 <td class="px-6 py-3 font-medium text-slate-800 whitespace-nowrap">{{ $item->kode_aset }}</td>
-                                <td class="px-6 py-3 text-slate-600">{{ $item->jenis?->nama ?? '-' }}</td>
-                                <td class="px-6 py-3 text-slate-600">{{ trim(($item->merek ?? '') . ' ' . ($item->tipe ?? '')) ?: '-' }}</td>
-                                <td class="px-6 py-3 text-slate-600">{{ $item->serial_number ?? '-' }}</td>
-                                <td class="px-6 py-3 text-slate-600">{{ $item->supplier?->nama ?? '-' }}</td>
+                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->jenis?->nama ?? '-' }}</td>
+                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ trim(($item->merek ?? '') . ' ' . ($item->tipe ?? '')) ?: '-' }}</td>
+                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->serial_number ?? '-' }}</td>
+                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->supplier?->nama ?? '-' }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap">
                                     <span class="inline-block rounded-full font-medium whitespace-nowrap text-xs px-2.5 py-1 {{ $statusColor[$item->status] }}">
                                         {{ $statusLabel[$item->status] }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center justify-end gap-3 flex-nowrap">
-                                        <a href="{{ route('inventaris.aset.show', $item) }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">Detail</a>
-                                        <a href="{{ route('inventaris.aset.edit', $item) }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">Edit</a>
+                                <td class="px-6 py-3 whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-2 flex-nowrap">
+                                        <a href="{{ route('inventaris.aset.show', $item) }}" title="Detail"
+                                           class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </a>
+
+                                        @if ($item->status === 'tersedia' && auth()->user()?->hasRole('admin'))
+                                            <x-inventaris.aset.serahkan-modal :aset="$item" compact />
+                                        @endif
+
+                                        <a href="{{ route('inventaris.aset.edit', $item) }}" title="Edit"
+                                           class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 13.5V19.5a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 19.5V6.75A2.25 2.25 0 014.5 4.5h6" />
+                                            </svg>
+                                        </a>
+
                                         <form action="{{ route('inventaris.aset.destroy', $item) }}" method="POST"
                                               onsubmit="return confirm('Hapus aset ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-800">Hapus</button>
+                                            <button type="submit" title="Hapus"
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                </svg>
+                                            </button>
                                         </form>
                                     </div>
                                 </td>

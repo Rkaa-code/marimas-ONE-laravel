@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Inventaris') - Marimas One</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="antialiased">
     <div x-data="{ sidebarOpen: false }" x-on:sidebar-toggle.window="sidebarOpen = true" class="h-screen bg-white flex overflow-hidden">
@@ -29,7 +31,7 @@
                     Dashboard
                 </x-nav-link>
 
-                <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs('inventaris.aset.*')">
+                <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs(['inventaris.aset.*', 'inventaris.penanganan-aset.*', 'inventaris.foto-aset.*'])">
                     <x-icon.package class="h-[18px] w-[18px]" />
                     Aset
                 </x-nav-link>
@@ -95,7 +97,7 @@
             </main>
         </div>
     </div>
-
+    @livewireScripts    @stack('scripts')
 </body>
 </html><!DOCTYPE html>
 <html lang="id">
