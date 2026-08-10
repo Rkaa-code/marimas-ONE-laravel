@@ -47,54 +47,7 @@
                 <span class="font-medium text-amber-900">Sedang dipegang oleh {{ $aset->pemakaiAktif->penerima->name }}</span>
                 <span class="text-amber-700"> &mdash; sejak {{ $aset->pemakaiAktif->tanggal_serah->format('d M Y') }}</span>
             </div>
-            <div class="flex items-center gap-2" x-data="{ laporRusak: false }">
-                <button type="button" x-on:click="laporRusak = true"
-                        class="rounded-lg border border-red-300 bg-white px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50">
-                    Lapor Rusak
-                </button>
-                <form method="POST" action="{{ route('inventaris.aset.pemakai.kembalikan', $aset->pemakaiAktif) }}">
-                    @csrf
-                    <button type="submit" class="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100">
-                        Tandai Dikembalikan
-                    </button>
-                </form>
-
-                <div x-show="laporRusak" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="fixed inset-0 bg-black/40" x-on:click="laporRusak = false"></div>
-                    <div class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                        <div class="mb-4 flex items-start justify-between">
-                            <h2 class="text-base font-semibold text-slate-900">Lapor Rusak &mdash; {{ $aset->kode_aset }}</h2>
-                            <button type="button" x-on:click="laporRusak = false" class="text-slate-400 hover:text-slate-600">
-                                <x-icon.x class="h-5 w-5" />
-                            </button>
-                        </div>
-                        <form method="POST" action="{{ route('inventaris.aset.lapor-rusak', $aset) }}" class="space-y-4">
-                            @csrf
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Jenis Kerusakan</label>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <label class="flex cursor-pointer items-center justify-center rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900 has-[:checked]:text-white">
-                                        <input type="radio" name="jenis_kerusakan" value="hardware" class="hidden" required>
-                                        Hardware
-                                    </label>
-                                    <label class="flex cursor-pointer items-center justify-center rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900 has-[:checked]:text-white">
-                                        <input type="radio" name="jenis_kerusakan" value="software" class="hidden" required>
-                                        Software
-                                    </label>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Keluhan</label>
-                                <textarea name="keluhan" rows="3" required placeholder="cth. keyboard tidak berfungsi sebelah kiri"
-                                          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-500 focus:outline-none"></textarea>
-                            </div>
-                            <button type="submit" class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
-                                Kirim Laporan
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <x-inventaris.aset.kembalikan-modal :pemakai="$aset->pemakaiAktif" />
         </div>
     @endif
 

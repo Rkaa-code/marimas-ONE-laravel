@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::post('aset-pemakai/{pemakai}/kembalikan', [AsetPemakaiController::class, 'kembalikan'])->name('aset.pemakai.kembalikan');
         Route::get('aset-pemakai/{pemakai}/struk', [AsetPemakaiController::class, 'struk'])->name('aset.pemakai.struk');
+        Route::get('aset-pemakai/{pemakai}/struk-kembali', [AsetPemakaiController::class, 'strukKembali'])->name('aset.pemakai.struk-kembali');
 
         Route::prefix('penanganan-aset')->name('penanganan-aset.')->group(function () {
             Route::get('/', [AsetPenangananController::class, 'index'])->name('index');
