@@ -9,7 +9,7 @@
     </div>
 
     <form action="{{ route('inventaris.aset.update', $aset) }}" method="POST" enctype="multipart/form-data"
-          class="rounded-xl border border-slate-200 bg-white p-6">
+          class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
         @csrf
         @method('PUT')
 

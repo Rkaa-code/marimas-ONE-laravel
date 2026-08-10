@@ -12,12 +12,12 @@
         'dijual' => 'Dijual',
     ];
     $statusColor = [
-        'tersedia' => 'bg-green-100 text-green-800',
-        'dipakai' => 'bg-blue-100 text-blue-800',
-        'menunggu_perbaikan' => 'bg-yellow-100 text-yellow-800',
-        'sedang_diperbaiki' => 'bg-orange-100 text-orange-800',
+        'tersedia' => 'bg-emerald-50 text-emerald-700',
+        'dipakai' => 'bg-amber-50 text-amber-700',
+        'menunggu_perbaikan' => 'bg-yellow-50 text-yellow-700',
+        'sedang_diperbaiki' => 'bg-sky-50 text-sky-700',
         'rusak_berat' => 'bg-red-100 text-red-800',
-        'dijual' => 'bg-slate-200 text-slate-700',
+        'dijual' => 'bg-purple-50 text-purple-700',
     ];
 @endphp
 
@@ -62,7 +62,7 @@
         @endif
     </form>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <table class="w-full text-sm">
             <thead class="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
                 <tr>
@@ -85,7 +85,7 @@
                         <td class="px-4 py-3">{{ $item->serial_number ?? '-' }}</td>
                         <td class="px-4 py-3">{{ $item->supplier?->nama ?? '-' }}</td>
                         <td class="px-4 py-3">
-                            <span class="rounded-full px-2 py-1 text-xs font-medium {{ $statusColor[$item->status] }}">
+                            <span class="inline-block rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap {{ $statusColor[$item->status] }}">
                                 {{ $statusLabel[$item->status] }}
                             </span>
                         </td>

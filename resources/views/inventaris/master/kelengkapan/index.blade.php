@@ -19,7 +19,7 @@
                class="w-full max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none">
     </form>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <table class="w-full text-sm">
             <thead class="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
                 <tr>

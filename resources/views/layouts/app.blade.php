@@ -6,43 +6,72 @@
     <title>@yield('title', 'Inventaris') - Marimas One</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased">
-    <div class="flex min-h-screen">
-        <aside class="w-64 shrink-0 bg-slate-900 text-slate-200">
-            <div class="px-6 py-5 border-b border-slate-800">
-                <span class="text-lg font-semibold text-white">Marimas One</span>
-                <p class="text-xs text-slate-400">Inventaris</p>
+<body class="antialiased">
+    <div x-data="{ sidebarOpen: false }" x-on:sidebar-toggle.window="sidebarOpen = true" class="h-screen bg-white flex overflow-hidden">
+
+        {{-- overlay mobile --}}
+        <div x-show="sidebarOpen" x-cloak x-on:click="sidebarOpen = false"
+             class="fixed inset-0 z-40 bg-black/40 lg:hidden"></div>
+
+        {{-- sidebar --}}
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+               class="fixed lg:sticky top-0 left-0 z-50 flex h-screen w-64 shrink-0 flex-col bg-white transition-transform duration-300 lg:translate-x-0">
+            <div class="flex h-18 shrink-0 items-center justify-between px-6">
+                <span class="text-lg font-bold text-slate-900">Marimas One</span>
+                <button x-on:click="sidebarOpen = false" class="text-slate-400 lg:hidden">
+                    <x-icon.x class="h-5 w-5" />
+                </button>
             </div>
-            <nav class="px-3 py-4 space-y-1">
-                <a href="{{ route('inventaris.aset.index') }}"
-                   class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('inventaris.aset.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+
+            <nav class="flex-1 overflow-y-auto px-3 py-4">
+                <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs('inventaris.aset.*')">
+                    <x-icon.package class="h-[18px] w-[18px]" />
                     Aset
-                </a>
+                </x-nav-link>
 
-                <p class="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Master Data</p>
+                <div x-data="{ open: {{ request()->routeIs('inventaris.master.*') ? 'true' : 'false' }} }" class="mb-1">
+                    <button x-on:click="open = !open"
+                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventaris.master.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                        <x-icon.database class="h-[18px] w-[18px]" />
+                        <span class="flex-1 text-left">Master Data</span>
+                        <x-icon.chevron-down class="h-4 w-4 transition-transform duration-200" x-bind:class="open && 'rotate-180'" />
+                    </button>
 
-                <a href="{{ route('inventaris.master.jenis-aset.index') }}"
-                   class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('inventaris.master.jenis-aset.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    Jenis Aset
-                </a>
-                <a href="{{ route('inventaris.master.supplier.index') }}"
-                   class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('inventaris.master.supplier.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    Supplier
-                </a>
-                <a href="{{ route('inventaris.master.kelengkapan.index') }}"
-                   class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('inventaris.master.kelengkapan.*') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    Kelengkapan
-                </a>
+                    <div x-show="open" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-3">
+                        <x-nav-sublink :href="route('inventaris.master.jenis-aset.index')" :active="request()->routeIs('inventaris.master.jenis-aset.*')">
+                            Jenis Aset
+                        </x-nav-sublink>
+                        <x-nav-sublink :href="route('inventaris.master.supplier.index')" :active="request()->routeIs('inventaris.master.supplier.*')">
+                            Supplier
+                        </x-nav-sublink>
+                        <x-nav-sublink :href="route('inventaris.master.kelengkapan.index')" :active="request()->routeIs('inventaris.master.kelengkapan.*')">
+                            Kelengkapan
+                        </x-nav-sublink>
+                    </div>
+                </div>
             </nav>
         </aside>
 
-        <main class="flex-1 p-6">
-            <div class="mx-auto max-w-6xl">
-                @include('components.flash')
+        {{-- main area --}}
+        <div class="flex h-screen min-w-0 flex-1 flex-col overflow-y-auto">
+            <header class="sticky top-0 z-30 flex h-18 min-h-18 shrink-0 items-center justify-between bg-white px-4 md:px-8">
+                <div class="flex items-center gap-3">
+                    <button type="button" x-on:click="window.dispatchEvent(new CustomEvent('sidebar-toggle'))" class="text-slate-600 lg:hidden">
+                        <x-icon.menu class="h-[22px] w-[22px]" />
+                    </button>
+                    <h1 class="hidden text-xl font-bold text-slate-900 sm:block">@yield('title', 'Inventaris')</h1>
+                </div>
+            </header>
 
-                @yield('content')
-            </div>
-        </main>
+            <main class="flex-1 p-4 md:p-8">
+                <div class="min-h-[calc(100vh-6.5rem)] rounded-3xl bg-zinc-100 p-4 md:p-8">
+                    @include('components.flash')
+
+                    @yield('content')
+                </div>
+            </main>
+        </div>
     </div>
+
 </body>
 </html>
