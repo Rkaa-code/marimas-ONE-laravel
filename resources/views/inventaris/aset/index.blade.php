@@ -109,6 +109,7 @@
                             <th class="px-6 py-3 font-medium text-center whitespace-nowrap">Merek / Tipe</th>
                             <th class="px-6 py-3 font-medium text-center whitespace-nowrap">Serial Number</th>
                             <th class="px-6 py-3 font-medium text-center whitespace-nowrap">Supplier</th>
+                            <th class="px-6 py-3 font-medium text-center whitespace-nowrap">Dipakai Oleh</th>
                             <th class="px-6 py-3 font-medium text-center whitespace-nowrap">Status</th>
                             <th class="px-6 py-3 font-medium text-center whitespace-nowrap">Aksi</th>
                         </tr>
@@ -121,6 +122,7 @@
                                 <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ trim(($item->merek ?? '') . ' ' . ($item->tipe ?? '')) ?: '-' }}</td>
                                 <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->serial_number ?? '-' }}</td>
                                 <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->supplier?->nama ?? '-' }}</td>
+                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->status === 'dipakai' && $item->pemakaiAktif ? $item->pemakaiAktif->penerima->name : '-' }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap">
                                     <span class="inline-block rounded-full font-medium whitespace-nowrap text-xs px-2.5 py-1 {{ $statusColor[$item->status] }}">
                                         {{ $statusLabel[$item->status] }}
@@ -138,6 +140,11 @@
 
                                         @if ($item->status === 'tersedia' && auth()->user()?->hasRole('admin'))
                                             <x-inventaris.aset.serahkan-modal :aset="$item" compact />
+                                        @endif
+
+                                        @if ($item->status === 'dipakai' && $item->pemakaiAktif)
+                                            <x-inventaris.aset.kembalikan-modal :pemakai="$item->pemakaiAktif" compact />
+                                            <x-inventaris.aset.lapor-rusak-modal :aset="$item" />
                                         @endif
 
                                         @if (auth()->user()?->hasRole('admin'))
@@ -166,7 +173,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-sm text-slate-400 text-center py-8">Belum ada aset.</td>
+                                <td colspan="8" class="text-sm text-slate-400 text-center py-8">Belum ada aset.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -198,6 +205,7 @@
                         <div x-show="expanded === {{ $item->id }}" x-cloak class="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
                             <p class="text-xs text-slate-500">Serial Number: <span class="text-slate-700 font-medium">{{ $item->serial_number ?? '-' }}</span></p>
                             <p class="text-xs text-slate-500">Supplier: <span class="text-slate-700 font-medium">{{ $item->supplier?->nama ?? '-' }}</span></p>
+                            <p class="text-xs text-slate-500">Dipakai Oleh: <span class="text-slate-700 font-medium">{{ $item->status === 'dipakai' && $item->pemakaiAktif ? $item->pemakaiAktif->penerima->name : '-' }}</span></p>
                             <div class="flex items-center flex-wrap gap-3 mt-1">
                                 <a href="{{ route('inventaris.aset.show', $item) }}" class="text-sm font-medium text-slate-600 hover:text-slate-900">Detail</a>
                                 @if (auth()->user()?->hasRole('admin'))
@@ -210,6 +218,13 @@
                                     </form>
                                 @endif
                             </div>
+
+                            @if ($item->status === 'dipakai' && $item->pemakaiAktif)
+                                <div class="flex items-center flex-wrap gap-2 mt-1">
+                                    <x-inventaris.aset.kembalikan-modal :pemakai="$item->pemakaiAktif" compact />
+                                    <x-inventaris.aset.lapor-rusak-modal :aset="$item" />
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @empty

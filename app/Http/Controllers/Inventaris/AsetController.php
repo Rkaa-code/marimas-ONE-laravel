@@ -14,7 +14,7 @@ class AsetController extends Controller
 {
     public function index(Request $request)
     {
-        $aset = Aset::with(['jenis', 'supplier'])
+        $aset = Aset::with(['jenis', 'supplier', 'pemakaiAktif.penerima'])
             ->when($request->search, function ($q) use ($request) {
                 $q->where(function ($sub) use ($request) {
                     $sub->where('merek', 'like', '%' . $request->search . '%')

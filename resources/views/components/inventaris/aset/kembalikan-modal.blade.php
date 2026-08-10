@@ -1,10 +1,20 @@
-@props(['pemakai'])
+@props(['pemakai', 'compact' => false])
 
 <div x-data="kembalikanAsetForm({{ $pemakai->id }})" x-cloak>
-    <button type="button" x-on:click="open = true"
-            class="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100">
-        Tandai Dikembalikan
-    </button>
+    @if ($compact)
+        <button type="button" x-on:click="open = true" title="Kembalikan"
+                class="flex h-8 items-center gap-1.5 rounded-full bg-emerald-600 px-3 text-xs font-medium text-white hover:bg-emerald-700">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 15L4 10m0 0l5-5m-5 5h11a4 4 0 010 8h-1" />
+            </svg>
+            Kembalikan
+        </button>
+    @else
+        <button type="button" x-on:click="open = true"
+                class="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100">
+            Tandai Dikembalikan
+        </button>
+    @endif
 
     <div x-show="open" class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
         <div class="fixed inset-0 bg-black/40" x-on:click="open = false"></div>
