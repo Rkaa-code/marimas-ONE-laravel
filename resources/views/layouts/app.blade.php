@@ -24,6 +24,14 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto px-3 py-4">
+<<<<<<< HEAD
+                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-icon.layout-dashboard class="h-[18px] w-[18px]" />
+                    Dashboard
+                </x-nav-link>
+
+=======
+>>>>>>> d058174a11ac90b4fe9fe7a3303ed01298e17937
                 <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs('inventaris.aset.*')">
                     <x-icon.package class="h-[18px] w-[18px]" />
                     Aset
@@ -50,6 +58,24 @@
                     </div>
                 </div>
             </nav>
+
+            <div class="shrink-0 border-t border-slate-100 p-3">
+                <div class="flex items-center gap-3 rounded-lg px-3 py-2.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
+                        {{ strtoupper(substr(session('dummy_user_name', 'Admin'), 0, 1)) }}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-slate-800">{{ session('dummy_user_name', 'Admin') }}</p>
+                        <p class="truncate text-xs text-slate-400">{{ session('dummy_user_email', 'admin@marimasone.test') }}</p>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="text-slate-400 hover:text-slate-700" title="Keluar">
+                            <x-icon.log-out class="h-[18px] w-[18px]" />
+                        </button>
+                    </form>
+                </div>
+            </div>
         </aside>
 
         {{-- main area --}}
