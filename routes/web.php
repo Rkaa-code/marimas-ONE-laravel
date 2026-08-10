@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Auth\DummyLoginController;
+use App\Http\Controllers\DummyLoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Inventaris\AsetController;
 use App\Http\Controllers\Inventaris\JenisAsetController;
