@@ -23,7 +23,6 @@
         <table class="w-full text-sm">
             <thead class="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
                 <tr>
-                    <th class="px-4 py-3">Kode</th>
                     <th class="px-4 py-3">Nama</th>
                     <th class="px-4 py-3">Jumlah Aset</th>
                     <th class="px-4 py-3 text-right">Aksi</th>
@@ -32,9 +31,6 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse ($jenisAset as $item)
                     <tr>
-                        <td class="px-4 py-3">
-                            <span class="inline-block rounded-full bg-slate-100 px-2.5 py-1 text-xs font-mono font-medium text-slate-700">{{ $item->kode }}</span>
-                        </td>
                         <td class="px-4 py-3">{{ $item->nama }}</td>
                         <td class="px-4 py-3">{{ $item->aset_count }}</td>
                         <td class="px-4 py-3 text-right">
@@ -56,13 +52,6 @@
                             @csrf
                             @method('PUT')
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-slate-700">Kode <span class="text-red-500">*</span></label>
-                                <input type="text" name="kode" value="{{ $item->kode }}" required maxlength="30"
-                                       placeholder="mis. LAPTOP"
-                                       class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono uppercase focus:border-slate-500 focus:outline-none">
-                                <p class="mt-1 text-xs text-slate-400">Dipakai buat awalan kode aset, mis. IT-2026-LAPTOP-001.</p>
-                            </div>
-                            <div>
                                 <label class="mb-1 block text-sm font-medium text-slate-700">Nama</label>
                                 <input type="text" name="nama" value="{{ $item->nama }}" required
                                        class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none">
@@ -77,7 +66,7 @@
                     </x-modal>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-6 text-center text-slate-400">Belum ada jenis aset.</td>
+                        <td colspan="3" class="px-4 py-6 text-center text-slate-400">Belum ada jenis aset.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -92,15 +81,10 @@
         <form action="{{ route('inventaris.master.jenis-aset.store') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label class="mb-1 block text-sm font-medium text-slate-700">Kode <span class="text-red-500">*</span></label>
-                <input type="text" name="kode" required maxlength="30" placeholder="mis. LAPTOP"
-                       class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono uppercase focus:border-slate-500 focus:outline-none">
-                <p class="mt-1 text-xs text-slate-400">Dipakai buat awalan kode aset, mis. IT-2026-LAPTOP-001.</p>
-            </div>
-            <div>
                 <label class="mb-1 block text-sm font-medium text-slate-700">Nama</label>
-                <input type="text" name="nama" required
+                <input type="text" name="nama" required placeholder="mis. Laptop"
                        class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none">
+                <p class="mt-1 text-xs text-slate-400">Kode aset (mis. IT-2026-LAPTOP-001) otomatis dibikin dari nama ini.</p>
             </div>
             <div class="flex justify-end gap-2">
                 <button type="button" x-on:click="open = false"

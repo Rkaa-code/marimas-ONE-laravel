@@ -57,10 +57,11 @@ return new class extends Migration
                     RETURN NEW;
                 END IF;
 
-                SELECT kode INTO v_kode_jenis FROM jenis_aset WHERE id = NEW.jenis_id;
+                SELECT UPPER(REGEXP_REPLACE(nama, '[^A-Za-z0-9]', '', 'g')) INTO v_kode_jenis
+                FROM jenis_aset WHERE id = NEW.jenis_id;
 
-                IF v_kode_jenis IS NULL THEN
-                    RAISE EXCEPTION 'Jenis aset % tidak punya kode, tidak bisa generate kode_aset', NEW.jenis_id;
+                IF v_kode_jenis IS NULL OR v_kode_jenis = '' THEN
+                    RAISE EXCEPTION 'Jenis aset % tidak ditemukan / nama kosong, tidak bisa generate kode_aset', NEW.jenis_id;
                 END IF;
 
                 v_prefix := 'IT-' || v_tahun || '-' || v_kode_jenis || '-';
