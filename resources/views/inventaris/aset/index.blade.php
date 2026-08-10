@@ -102,16 +102,12 @@
             </div>
 
             <select name="jenis_id" onchange="this.form.submit()"
-                    class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-500 focus:outline-none">
+                    class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
                 <option value="">Semua Jenis</option>
                 @foreach ($jenisAset as $jenis)
                     <option value="{{ $jenis->id }}" @selected(request('jenis_id') == $jenis->id)>{{ $jenis->nama }}</option>
                 @endforeach
             </select>
-
-            <button type="submit" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
-                Filter
-            </button>
 
             @if (request()->hasAny(['search', 'jenis_id', 'status']))
                 <a href="{{ route('inventaris.aset.index') }}" class="rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700">
@@ -127,7 +123,7 @@
                     <thead>
                         <tr class="border-b border-slate-100 text-xs text-slate-400 uppercase tracking-wide">
                             @if (auth()->user()?->hasRole('admin'))
-                                <th class="px-4 py-3 font-medium text-center whitespace-nowrap w-10">
+                                <th class="col-checkbox hidden px-4 py-3 font-medium text-center whitespace-nowrap w-10">
                                     <input type="checkbox" id="checkbox-all" class="rounded border-slate-300">
                                 </th>
                             @endif
@@ -147,24 +143,24 @@
                         @forelse ($aset as $item)
                             <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60 transition">
                                 @if (auth()->user()?->hasRole('admin'))
-                                    <td class="px-4 py-3 text-center whitespace-nowrap">
+                                    <td class="col-checkbox hidden px-4 py-3 text-center whitespace-nowrap">
                                         <input type="checkbox" name="ids[]" value="{{ $item->id }}" form="form-bulk-hapus" class="checkbox-aset rounded border-slate-300">
                                     </td>
                                 @endif
-                                <td class="px-6 py-3 font-medium text-slate-800 whitespace-nowrap">{{ $item->kode_aset }}</td>
-                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->jenis?->nama ?? '-' }}</td>
-                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ trim(($item->merek ?? '') . ' ' . ($item->tipe ?? '')) ?: '-' }}</td>
-                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->serial_number ?? '-' }}</td>
-                                <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->supplier?->nama ?? '-' }}</td>
+                                <td class="px-6 py-3 text-center font-medium text-slate-800 whitespace-nowrap">{{ $item->kode_aset }}</td>
+                                <td class="px-6 py-3 text-center text-slate-600 whitespace-nowrap">{{ $item->jenis?->nama ?? '-' }}</td>
+                                <td class="px-6 py-3 text-center text-slate-600 whitespace-nowrap">{{ trim(($item->merek ?? '') . ' ' . ($item->tipe ?? '')) ?: '-' }}</td>
+                                <td class="px-6 py-3 text-center text-slate-600 whitespace-nowrap">{{ $item->serial_number ?? '-' }}</td>
+                                <td class="px-6 py-3 text-center text-slate-600 whitespace-nowrap">{{ $item->supplier?->nama ?? '-' }}</td>
                                 @if (auth()->user()?->hasRole('admin'))
-                                    <td class="px-6 py-3 text-slate-600 whitespace-nowrap">{{ $item->status === 'dipakai' && $item->pemakaiAktif ? $item->pemakaiAktif->penerima->name : '-' }}</td>
+                                    <td class="px-6 py-3 text-center text-slate-600 whitespace-nowrap">{{ $item->status === 'dipakai' && $item->pemakaiAktif ? $item->pemakaiAktif->penerima->name : '-' }}</td>
                                 @endif
-                                <td class="px-6 py-3 whitespace-nowrap">
+                                <td class="px-6 py-3 text-center whitespace-nowrap">
                                     <span class="inline-block rounded-full font-medium whitespace-nowrap text-xs px-2.5 py-1 {{ $statusColor[$item->status] }}">
                                         {{ $statusLabel[$item->status] }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-3 whitespace-nowrap">
+                                <td class="px-6 py-3 text-center whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-2 flex-nowrap">
                                         <a href="{{ route('inventaris.aset.show', $item) }}" title="Detail"
                                            class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800">
@@ -210,7 +206,7 @@
                     <div class="px-4 py-3">
                         <div class="w-full flex items-start justify-between gap-2 text-left">
                             @if (auth()->user()?->hasRole('admin'))
-                                <input type="checkbox" name="ids[]" value="{{ $item->id }}" form="form-bulk-hapus" class="checkbox-aset rounded border-slate-300 mt-1">
+                                <input type="checkbox" name="ids[]" value="{{ $item->id }}" form="form-bulk-hapus" class="checkbox-aset col-checkbox hidden rounded border-slate-300 mt-1">
                             @endif
                         <button type="button" x-on:click="expanded = expanded === {{ $item->id }} ? null : {{ $item->id }}"
                                 class="w-full flex items-start justify-between gap-2 text-left">
@@ -291,14 +287,17 @@
 
                 toggleBtn?.addEventListener('click', function () {
                     const showing = !bar.classList.contains('hidden');
+                    const cols = document.querySelectorAll('.col-checkbox');
                     if (showing) {
                         bar.classList.add('hidden');
                         bar.classList.remove('flex');
+                        cols.forEach(el => el.classList.add('hidden'));
                         getCheckboxes().forEach(cb => cb.checked = false);
                         if (checkAll) checkAll.checked = false;
                     } else {
                         bar.classList.remove('hidden');
                         bar.classList.add('flex');
+                        cols.forEach(el => el.classList.remove('hidden'));
                     }
                     refreshCount();
                 });
