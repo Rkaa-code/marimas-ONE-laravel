@@ -28,13 +28,33 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('inventaris')->name('inventaris.')->group(function () {
-        Route::resource('aset', AsetController::class);
+        // Lihat daftar & detail aset -- boleh semua role yang login.
+        Route::resource('aset', AsetController::class)->only(['index', 'show']);
 
-        Route::prefix('aset/{aset}')->name('aset.')->group(function () {
-            Route::get('cari-penerima', [AsetPemakaiController::class, 'cariPenerima'])->name('cari-penerima');
-            Route::post('serahkan', [AsetPemakaiController::class, 'store'])->name('serahkan');
-            Route::post('lapor-rusak', [AsetPenangananController::class, 'store'])->name('lapor-rusak');
+        // Kelola aset (tambah/edit/hapus) & serahkan/pinjamkan ke role lain -- admin aja.
+        Route::middleware('admin')->group(function () {
+            Route::resource('aset', AsetController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
+
+            Route::prefix('aset/{aset}')->name('aset.')->group(function () {
+                Route::get('cari-penerima', [AsetPemakaiController::class, 'cariPenerima'])->name('cari-penerima');
+                Route::post('serahkan', [AsetPemakaiController::class, 'store'])->name('serahkan');
+            });
+
+            Route::prefix('master')->name('master.')->group(function () {
+                Route::resource('jenis-aset', JenisAsetController::class)
+                    ->only(['index', 'store', 'update', 'destroy'])
+                    ->parameters(['jenis-aset' => 'jenisAset']);
+
+                Route::resource('supplier', SupplierController::class)
+                    ->only(['index', 'store', 'update', 'destroy']);
+
+                Route::resource('kelengkapan', KelengkapanMasterController::class)
+                    ->only(['index', 'store', 'update', 'destroy']);
+            });
         });
+
+        // Kembalikan & lapor rusak -- self-service, boleh dipencet user yang lagi pegang aset-nya.
+        Route::post('aset/{aset}/lapor-rusak', [AsetPenangananController::class, 'store'])->name('aset.lapor-rusak');
         Route::post('aset-pemakai/{pemakai}/kembalikan', [AsetPemakaiController::class, 'kembalikan'])->name('aset.pemakai.kembalikan');
         Route::get('aset-pemakai/{pemakai}/struk', [AsetPemakaiController::class, 'struk'])->name('aset.pemakai.struk');
         Route::get('aset-pemakai/{pemakai}/struk-kembali', [AsetPemakaiController::class, 'strukKembali'])->name('aset.pemakai.struk-kembali');
@@ -47,17 +67,5 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::get('foto-aset', [FotoAsetController::class, 'index'])->name('foto-aset.index');
-
-        Route::prefix('master')->name('master.')->group(function () {
-            Route::resource('jenis-aset', JenisAsetController::class)
-                ->only(['index', 'store', 'update', 'destroy'])
-                ->parameters(['jenis-aset' => 'jenisAset']);
-    
-            Route::resource('supplier', SupplierController::class)
-                ->only(['index', 'store', 'update', 'destroy']);
-    
-            Route::resource('kelengkapan', KelengkapanMasterController::class)
-                ->only(['index', 'store', 'update', 'destroy']);
-        });
     });
 });
