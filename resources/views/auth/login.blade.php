@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Marimas One</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])A
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased">
     <div class="flex min-h-screen items-center justify-center bg-zinc-100 px-4">
