@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-<<<<<<< HEAD:app/Http/Controllers/auth/AuthController.php
 use App\Models\AuditLog;
-=======
->>>>>>> 2186d5038d8114b2218ee963b7ceb6116291fd82:app/Http/Controllers/Auth/AuthController.php
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +36,6 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
-<<<<<<< HEAD:app/Http/Controllers/auth/AuthController.php
 
         AuditLog::create([
             'user_id' => Auth::id(),
@@ -49,8 +45,6 @@ class AuthController extends Controller
             'user_agent' => substr((string) $request->userAgent(), 0, 255),
         ]);
 
-=======
->>>>>>> 2186d5038d8114b2218ee963b7ceb6116291fd82:app/Http/Controllers/Auth/AuthController.php
         flash()
             ->success('Selamat datang, ' . Auth::user()->name . '!');
         return redirect()->intended(route('dashboard'));
@@ -58,7 +52,6 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-<<<<<<< HEAD:app/Http/Controllers/auth/AuthController.php
         if (Auth::check()) {
             AuditLog::create([
                 'user_id' => Auth::id(),
@@ -69,8 +62,6 @@ class AuthController extends Controller
             ]);
         }
 
-=======
->>>>>>> 2186d5038d8114b2218ee963b7ceb6116291fd82:app/Http/Controllers/Auth/AuthController.php
         Auth::logout();
 
         $request->session()->invalidate();
