@@ -48,14 +48,6 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center gap-2 text-slate-600">
-                            <input type="checkbox" name="remember" class="rounded border-slate-300">
-                            Ingat saya
-                        </label>
-                        <span class="text-slate-400">Lupa password?</span>
-                    </div>
-
                     <button type="submit"
                             class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800">
                         Masuk
