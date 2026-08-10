@@ -28,10 +28,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('inventaris')->name('inventaris.')->group(function () {
-        // Lihat daftar & detail aset -- boleh semua role yang login.
-        Route::resource('aset', AsetController::class)->only(['index', 'show']);
-
         // Kelola aset (tambah/edit/hapus) & serahkan/pinjamkan ke role lain -- admin aja.
+        // HARUS didaftarkan sebelum resource index/show, karena route create/edit
+        // punya segmen statis ("create", "{aset}/edit") yang harus menang duluan
+        // sebelum ketangkep sama wildcard {aset} di route show.
         Route::middleware('admin')->group(function () {
             Route::resource('aset', AsetController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
 
@@ -52,6 +52,10 @@ Route::middleware('auth')->group(function () {
                     ->only(['index', 'store', 'update', 'destroy']);
             });
         });
+
+        // Lihat daftar & detail aset -- boleh semua role yang login.
+        // Route show ({aset}) ditaruh belakangan biar nggak nabrak route create di atas.
+        Route::resource('aset', AsetController::class)->only(['index', 'show']);
 
         // Kembalikan & lapor rusak -- self-service, boleh dipencet user yang lagi pegang aset-nya.
         Route::post('aset/{aset}/lapor-rusak', [AsetPenangananController::class, 'store'])->name('aset.lapor-rusak');
