@@ -36,6 +36,11 @@
                     Aset
                 </x-nav-link>
 
+                <x-nav-link :href="route('cabang.index')" :active="request()->routeIs('cabang.index')">
+                    <x-icon.package class="h-[18px] w-[18px]" />
+                    Cabang
+                </x-nav-link>
+
                 <div x-data="{ open: {{ request()->routeIs('inventaris.master.*') ? 'true' : 'false' }} }" class="mb-1">
                     <button x-on:click="open = !open"
                             class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventaris.master.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
@@ -97,6 +102,11 @@
             </main>
         </div>
     </div>
-    @livewireScripts    @stack('scripts')
+
+    {{-- PENTING: script custom (@stack('scripts')) HARUS dijalankan sebelum @livewireScripts, --}}
+    {{-- karena Livewire 3 membawa Alpine.js sendiri dan otomatis Alpine.start(). --}}
+    {{-- Kalau urutannya kebalik, komponen Alpine custom (mis. cabangPage) belum ke-define saat Alpine mulai jalan. --}}
+    @stack('scripts')
+    @livewireScripts
 </body>
 </html>

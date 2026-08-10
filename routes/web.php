@@ -8,6 +8,7 @@ use App\Http\Controllers\Inventaris\JenisAsetController;
 use App\Http\Controllers\Inventaris\KelengkapanMasterController;
 use App\Http\Controllers\Inventaris\SupplierController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LokasiKantorController;
 
 Route::redirect('/', '/login');
 
@@ -19,6 +20,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('cabang', LokasiKantorController::class)
+        ->only(['index', 'create', 'store', 'update', 'destroy']);
+
     Route::prefix('inventaris')->name('inventaris.')->group(function () {
         Route::resource('aset', AsetController::class);
 
@@ -26,6 +31,7 @@ Route::middleware('auth')->group(function () {
             Route::get('cari-penerima', [AsetPemakaiController::class, 'cariPenerima'])->name('cari-penerima');
             Route::post('serahkan', [AsetPemakaiController::class, 'store'])->name('serahkan');
         });
+
         Route::post('aset-pemakai/{pemakai}/kembalikan', [AsetPemakaiController::class, 'kembalikan'])->name('aset.pemakai.kembalikan');
         Route::get('aset-pemakai/{pemakai}/struk', [AsetPemakaiController::class, 'struk'])->name('aset.pemakai.struk');
 
