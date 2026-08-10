@@ -45,4 +45,15 @@ class Aset extends Model
     {
         return $this->belongsToMany(KelengkapanMaster::class, 'aset_kelengkapan', 'aset_id', 'kelengkapan_master_id');
     }
+
+    public function riwayatPemakai()
+    {
+        return $this->hasMany(AsetPemakai::class)->latest('tanggal_serah');
+    }
+
+    /** Pemegang aktif sekarang (kalau status lagi 'dipakai'). */
+    public function pemakaiAktif()
+    {
+        return $this->hasOne(AsetPemakai::class)->whereNull('tanggal_kembali')->latestOfMany('tanggal_serah');
+    }
 }

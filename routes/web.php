@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\AsetPemakaiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Inventaris\AsetController;
 use App\Http\Controllers\Inventaris\JenisAsetController;
@@ -20,7 +21,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::prefix('inventaris')->name('inventaris.')->group(function () {
         Route::resource('aset', AsetController::class);
-    
+
+        Route::prefix('aset/{aset}')->name('aset.')->group(function () {
+            Route::get('cari-penerima', [AsetPemakaiController::class, 'cariPenerima'])->name('cari-penerima');
+            Route::post('serahkan', [AsetPemakaiController::class, 'store'])->name('serahkan');
+        });
+        Route::post('aset-pemakai/{pemakai}/kembalikan', [AsetPemakaiController::class, 'kembalikan'])->name('aset.pemakai.kembalikan');
+        Route::get('aset-pemakai/{pemakai}/struk', [AsetPemakaiController::class, 'struk'])->name('aset.pemakai.struk');
+
         Route::prefix('master')->name('master.')->group(function () {
             Route::resource('jenis-aset', JenisAsetController::class)
                 ->only(['index', 'store', 'update', 'destroy'])
