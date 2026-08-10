@@ -1,10 +1,21 @@
-@props(['aset'])
+@props(['aset', 'compact' => false])
 
 <div x-data="serahkanAsetForm({{ $aset->id }})" x-cloak>
-    <button type="button" x-on:click="open = true"
-            class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
-        Serahkan Aset
-    </button>
+    @if ($compact)
+        <button type="button" x-on:click="open = true" title="Serahkan"
+                class="flex h-8 items-center gap-1.5 rounded-full bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.83.699 2.528 0l7.089-7.089a1.789 1.789 0 000-2.528L13.276 3.659A2.25 2.25 0 0011.685 3H9.568z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6h.008v.008H6V6z" />
+            </svg>
+            Serahkan
+        </button>
+    @else
+        <button type="button" x-on:click="open = true"
+                class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
+            Serahkan Aset
+        </button>
+    @endif
 
     <div x-show="open" class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
         <div class="fixed inset-0 bg-black/40" x-on:click="open = false"></div>
