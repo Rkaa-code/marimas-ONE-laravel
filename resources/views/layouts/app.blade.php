@@ -41,13 +41,6 @@
                     Cabang
                 </x-nav-link>
 
-                <div x-data="{ open: {{ request()->routeIs('inventaris.master.*') ? 'true' : 'false' }} }" class="mb-1">
-                    <button x-on:click="open = !open"
-                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventaris.master.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
-                        <x-icon.database class="h-[18px] w-[18px]" />
-                        <span class="flex-1 text-left">Master Data</span>
-                        <x-icon.chevron-down class="h-4 w-4 transition-transform duration-200" x-bind:class="open && 'rotate-180'" />
-                    </button>
                 @if (auth()->user()?->role === 'admin')
                     <x-nav-link :href="route('notifikasi.index')" :active="request()->routeIs('notifikasi.*')">
                         <x-icon.bell class="h-[18px] w-[18px]" />
