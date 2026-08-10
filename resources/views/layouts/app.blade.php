@@ -24,11 +24,14 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto px-3 py-4">
+<<<<<<< HEAD
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     <x-icon.layout-dashboard class="h-[18px] w-[18px]" />
                     Dashboard
                 </x-nav-link>
 
+=======
+>>>>>>> d058174a11ac90b4fe9fe7a3303ed01298e17937
                 <x-nav-link :href="route('inventaris.aset.index')" :active="request()->routeIs('inventaris.aset.*')">
                     <x-icon.package class="h-[18px] w-[18px]" />
                     Aset

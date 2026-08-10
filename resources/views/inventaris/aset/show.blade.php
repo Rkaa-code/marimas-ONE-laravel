@@ -12,20 +12,21 @@
         'dijual' => 'Dijual',
     ];
     $statusColor = [
-        'tersedia' => 'bg-green-100 text-green-800',
-        'dipakai' => 'bg-blue-100 text-blue-800',
-        'menunggu_perbaikan' => 'bg-yellow-100 text-yellow-800',
-        'sedang_diperbaiki' => 'bg-orange-100 text-orange-800',
+        'tersedia' => 'bg-emerald-50 text-emerald-700',
+        'dipakai' => 'bg-amber-50 text-amber-700',
+        'menunggu_perbaikan' => 'bg-yellow-50 text-yellow-700',
+        'sedang_diperbaiki' => 'bg-sky-50 text-sky-700',
         'rusak_berat' => 'bg-red-100 text-red-800',
-        'dijual' => 'bg-slate-200 text-slate-700',
+        'dijual' => 'bg-purple-50 text-purple-700',
     ];
 @endphp
 
 @section('content')
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <h1 class="text-xl font-semibold text-slate-900">{{ $aset->merek }} {{ $aset->tipe }}</h1>
-            <span class="mt-1 inline-block rounded-full px-2 py-1 text-xs font-medium {{ $statusColor[$aset->status] }}">
+            <span class="inline-block rounded-full bg-slate-100 px-2.5 py-1 text-xs font-mono font-medium text-slate-700">{{ $aset->kode_aset }}</span>
+            <h1 class="mt-1.5 text-xl font-semibold text-slate-900">{{ $aset->merek }} {{ $aset->tipe }}</h1>
+            <span class="mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap {{ $statusColor[$aset->status] }}">
                 {{ $statusLabel[$aset->status] }}
             </span>
         </div>
@@ -39,7 +40,7 @@
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div class="md:col-span-2 space-y-6">
-            <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                 <h2 class="mb-4 text-sm font-semibold text-slate-900">Informasi Aset</h2>
                 <dl class="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -88,7 +89,7 @@
                 @endif
             </div>
 
-            <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                 <h2 class="mb-4 text-sm font-semibold text-slate-900">Kelengkapan</h2>
                 @if ($aset->kelengkapan->isEmpty())
                     <p class="text-sm text-slate-400">Tidak ada kelengkapan tercatat.</p>
@@ -103,7 +104,7 @@
         </div>
 
         <div>
-            <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                 <h2 class="mb-4 text-sm font-semibold text-slate-900">Foto</h2>
                 @if ($aset->foto)
                     <img src="{{ Storage::url($aset->foto) }}" alt="Foto aset" class="w-full rounded-lg object-cover">

@@ -4,12 +4,13 @@
 
 @section('content')
     <div class="mb-6">
-        <h1 class="text-xl font-semibold text-slate-900">Edit Aset</h1>
+        <span class="inline-block rounded-full bg-slate-100 px-2.5 py-1 text-xs font-mono font-medium text-slate-700">{{ $aset->kode_aset }}</span>
+        <h1 class="mt-1.5 text-xl font-semibold text-slate-900">Edit Aset</h1>
         <p class="text-sm text-slate-500">{{ $aset->merek }} {{ $aset->tipe }}</p>
     </div>
 
     <form action="{{ route('inventaris.aset.update', $aset) }}" method="POST" enctype="multipart/form-data"
-          class="rounded-xl border border-slate-200 bg-white p-6">
+          class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
         @csrf
         @method('PUT')
 

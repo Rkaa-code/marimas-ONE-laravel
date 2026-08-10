@@ -10,6 +10,7 @@ class JenisAset extends Model
 
     protected $fillable = [
         'nama',
+        'kode',
     ];
 
     public function aset()

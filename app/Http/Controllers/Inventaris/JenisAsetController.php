@@ -23,7 +23,10 @@ class JenisAsetController extends Controller
     {
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
+            'kode' => ['required', 'string', 'max:30', 'alpha_dash', 'unique:jenis_aset,kode'],
         ]);
+
+        $data['kode'] = strtoupper($data['kode']);
 
         JenisAset::create($data);
 
@@ -34,7 +37,10 @@ class JenisAsetController extends Controller
     {
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
+            'kode' => ['required', 'string', 'max:30', 'alpha_dash', 'unique:jenis_aset,kode,' . $jenisAset->id],
         ]);
+
+        $data['kode'] = strtoupper($data['kode']);
 
         $jenisAset->update($data);
 
