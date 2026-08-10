@@ -80,7 +80,7 @@ class AsetPemakaiController extends Controller
             ]);
 
             $aset->update(['status' => 'dipakai']);
-
+            flash()->success('Aset berhasil diserahkan ke ' . $pemakai->penerima->name . '.');
             return redirect()
                 ->route('inventaris.aset.pemakai.struk', $pemakai)
                 ->with('success', 'Aset berhasil diserahkan.');

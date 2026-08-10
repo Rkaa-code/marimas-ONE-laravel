@@ -69,8 +69,8 @@ class AsetController extends Controller
         $aset = Aset::create($data);
 
         $aset->kelengkapan()->sync($request->input('kelengkapan', []));
-
-        return redirect()->route('inventaris.aset.index')->with('success', 'Aset berhasil ditambahkan.');
+        flash()->success('Aset berhasil ditambahkan.');
+        return redirect()->route('inventaris.aset.index');
     }
 
     public function show(Aset $aset)
