@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+</html><!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -37,32 +37,39 @@
                 </x-nav-link>
 
                 @if (auth()->user()?->role === 'admin')
+                    <x-nav-link :href="route('notifikasi.index')" :active="request()->routeIs('notifikasi.*')">
+                        <x-icon.bell class="h-[18px] w-[18px]" />
+                        Notifikasi
+                    </x-nav-link>
+
                     <x-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')">
                         <x-icon.clipboard-list class="h-[18px] w-[18px]" />
                         Audit Log
                     </x-nav-link>
                 @endif
 
-                <div x-data="{ open: {{ request()->routeIs('inventaris.master.*') ? 'true' : 'false' }} }" class="mb-1">
-                    <button x-on:click="open = !open"
-                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventaris.master.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
-                        <x-icon.database class="h-[18px] w-[18px]" />
-                        <span class="flex-1 text-left">Master Data</span>
-                        <x-icon.chevron-down class="h-4 w-4 transition-transform duration-200" x-bind:class="open && 'rotate-180'" />
-                    </button>
+                @if (auth()->user()?->role === 'admin')
+                    <div x-data="{ open: {{ request()->routeIs('inventaris.master.*') ? 'true' : 'false' }} }" class="mb-1">
+                        <button x-on:click="open = !open"
+                                class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventaris.master.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                            <x-icon.database class="h-[18px] w-[18px]" />
+                            <span class="flex-1 text-left">Master Data</span>
+                            <x-icon.chevron-down class="h-4 w-4 transition-transform duration-200" x-bind:class="open && 'rotate-180'" />
+                        </button>
 
-                    <div x-show="open" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-3">
-                        <x-nav-sublink :href="route('inventaris.master.jenis-aset.index')" :active="request()->routeIs('inventaris.master.jenis-aset.*')">
-                            Jenis Aset
-                        </x-nav-sublink>
-                        <x-nav-sublink :href="route('inventaris.master.supplier.index')" :active="request()->routeIs('inventaris.master.supplier.*')">
-                            Supplier
-                        </x-nav-sublink>
-                        <x-nav-sublink :href="route('inventaris.master.kelengkapan.index')" :active="request()->routeIs('inventaris.master.kelengkapan.*')">
-                            Kelengkapan
-                        </x-nav-sublink>
+                        <div x-show="open" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-3">
+                            <x-nav-sublink :href="route('inventaris.master.jenis-aset.index')" :active="request()->routeIs('inventaris.master.jenis-aset.*')">
+                                Jenis Aset
+                            </x-nav-sublink>
+                            <x-nav-sublink :href="route('inventaris.master.supplier.index')" :active="request()->routeIs('inventaris.master.supplier.*')">
+                                Supplier
+                            </x-nav-sublink>
+                            <x-nav-sublink :href="route('inventaris.master.kelengkapan.index')" :active="request()->routeIs('inventaris.master.kelengkapan.*')">
+                                Kelengkapan
+                            </x-nav-sublink>
+                        </div>
                     </div>
-                </div>
+                @endif
             </nav>
 
             <div class="shrink-0 border-t border-slate-100 p-3">
@@ -93,6 +100,10 @@
                     </button>
                     <h1 class="hidden text-xl font-bold text-slate-900 sm:block">@yield('title', 'Inventaris')</h1>
                 </div>
+
+                @if (auth()->user()?->role === 'admin')
+                    <x-notifikasi-bell />
+                @endif
             </header>
 
             <main class="flex-1 p-4 md:p-8">

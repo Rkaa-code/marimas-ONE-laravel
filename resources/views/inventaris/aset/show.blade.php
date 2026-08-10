@@ -34,8 +34,10 @@
             @if ($aset->status === 'tersedia' && auth()->user()?->hasRole('admin'))
                 <x-inventaris.aset.serahkan-modal :aset="$aset" />
             @endif
-            <a href="{{ route('inventaris.aset.edit', $aset) }}"
-               class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Edit</a>
+            @if (auth()->user()?->hasRole('admin'))
+                <a href="{{ route('inventaris.aset.edit', $aset) }}"
+                   class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Edit</a>
+            @endif
             <a href="{{ route('inventaris.aset.index') }}"
                class="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Kembali</a>
         </div>
