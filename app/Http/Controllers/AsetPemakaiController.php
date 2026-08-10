@@ -53,39 +53,49 @@ class AsetPemakaiController extends Controller
 
         abort_unless($roleValid, 422, 'Penerima tidak cocok dengan tujuan yang dipilih.');
 
-        return DB::transaction(function () use ($request, $aset, $data) {
-            // Lock baris aset biar gak ada 2 admin serahin aset yang sama bersamaan.
-            $aset = Aset::whereKey($aset->id)->lockForUpdate()->firstOrFail();
+        try {
+            return DB::transaction(function () use ($request, $aset, $data) {
+                // Lock baris aset biar gak ada 2 admin serahin aset yang sama bersamaan.
+                $aset = Aset::whereKey($aset->id)->lockForUpdate()->firstOrFail();
 
-            abort_if($aset->status !== 'tersedia', 422, 'Aset sedang tidak tersedia untuk diserahkan.');
+                abort_if($aset->status !== 'tersedia', 422, 'Aset sedang tidak tersedia untuk diserahkan.');
 
-            $fotoPaths = collect($request->file('foto_serah'))
-                ->map(fn ($file) => $file->store('bukti-serah-terima', 'public'))
-                ->all();
+                $fotoPaths = collect($request->file('foto_serah'))
+                    ->map(fn ($file) => $file->store('bukti-serah-terima', 'public'))
+                    ->all();
 
-            $nomor = 'STJ-' . now()->format('Ymd') . '-' . str_pad(
-                (AsetPemakai::whereDate('created_at', now())->count() + 1),
-                4,
-                '0',
-                STR_PAD_LEFT
-            );
+                $nomor = 'STJ-' . now()->format('Ymd') . '-' . str_pad(
+                    (AsetPemakai::whereDate('created_at', now())->count() + 1),
+                    4,
+                    '0',
+                    STR_PAD_LEFT
+                );
 
-            $pemakai = AsetPemakai::create([
-                'aset_id' => $aset->id,
-                'user_id' => $data['user_id'],
-                'diserahkan_oleh_user_id' => Auth::id(),
-                'nomor_serah_terima' => $nomor,
-                'tanggal_serah' => $data['tanggal_serah'],
-                'catatan_serah' => $data['catatan_serah'] ?? null,
-                'foto_serah' => $fotoPaths,
+                $pemakai = AsetPemakai::create([
+                    'aset_id' => $aset->id,
+                    'user_id' => $data['user_id'],
+                    'diserahkan_oleh_user_id' => Auth::id(),
+                    'nomor_serah_terima' => $nomor,
+                    'tanggal_serah' => $data['tanggal_serah'],
+                    'catatan_serah' => $data['catatan_serah'] ?? null,
+                    'foto_serah' => $fotoPaths,
+                ]);
+
+                $aset->update(['status' => 'dipakai']);
+                flash()->success('Aset berhasil diserahkan ke ' . $pemakai->penerima->name . '.');
+                return redirect()
+                    ->route('inventaris.aset.pemakai.struk', $pemakai)
+                    ->with('success', 'Aset berhasil diserahkan.');
+            });
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal serahkan aset: ' . $e->getMessage(), [
+                'exception' => $e,
             ]);
 
-            $aset->update(['status' => 'dipakai']);
-            flash()->success('Aset berhasil diserahkan ke ' . $pemakai->penerima->name . '.');
-            return redirect()
-                ->route('inventaris.aset.pemakai.struk', $pemakai)
-                ->with('success', 'Aset berhasil diserahkan.');
-        });
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage() . ' (' . basename(str_replace('\\', '/', get_class($e))) . ' @ ' . basename($e->getFile()) . ':' . $e->getLine() . ')',
+            ], 500);
+        }
     }
 
     /** Tandai aset sudah dikembalikan, sekaligus opsi tandai rusak. */
