@@ -24,7 +24,8 @@
 @section('content')
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <h1 class="text-xl font-semibold text-slate-900">{{ $aset->merek }} {{ $aset->tipe }}</h1>
+            <span class="inline-block rounded-full bg-slate-100 px-2.5 py-1 text-xs font-mono font-medium text-slate-700">{{ $aset->kode_aset }}</span>
+            <h1 class="mt-1.5 text-xl font-semibold text-slate-900">{{ $aset->merek }} {{ $aset->tipe }}</h1>
             <span class="mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap {{ $statusColor[$aset->status] }}">
                 {{ $statusLabel[$aset->status] }}
             </span>

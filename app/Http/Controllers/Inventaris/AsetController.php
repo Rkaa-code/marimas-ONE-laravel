@@ -19,7 +19,8 @@ class AsetController extends Controller
                 $q->where(function ($sub) use ($request) {
                     $sub->where('merek', 'like', '%' . $request->search . '%')
                         ->orWhere('tipe', 'like', '%' . $request->search . '%')
-                        ->orWhere('serial_number', 'like', '%' . $request->search . '%');
+                        ->orWhere('serial_number', 'like', '%' . $request->search . '%')
+                        ->orWhere('kode_aset', 'like', '%' . $request->search . '%');
                 });
             })
             ->when($request->jenis_id, fn ($q) => $q->where('jenis_id', $request->jenis_id))
@@ -30,7 +31,22 @@ class AsetController extends Controller
 
         $jenisAset = JenisAset::orderBy('nama')->get();
 
-        return view('inventaris.aset.index', compact('aset', 'jenisAset'));
+        $statusCounts = Aset::when($request->search, function ($q) use ($request) {
+                $q->where(function ($sub) use ($request) {
+                    $sub->where('merek', 'like', '%' . $request->search . '%')
+                        ->orWhere('tipe', 'like', '%' . $request->search . '%')
+                        ->orWhere('serial_number', 'like', '%' . $request->search . '%')
+                        ->orWhere('kode_aset', 'like', '%' . $request->search . '%');
+                });
+            })
+            ->when($request->jenis_id, fn ($q) => $q->where('jenis_id', $request->jenis_id))
+            ->selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->toArray();
+        $statusCounts['semua'] = array_sum($statusCounts);
+
+        return view('inventaris.aset.index', compact('aset', 'jenisAset', 'statusCounts'));
     }
 
     public function create()
